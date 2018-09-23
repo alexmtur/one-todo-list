@@ -1,0 +1,53 @@
+<!-- Execute polymer serve on the file's folder and open http://localhost:8080/components/one-modal/test.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+<script type="module">
+    import {OneModal} from "./one-modal.js"
+    import {OneClass, html} from "@alexmtur/one-class"
+
+    class MyTest extends OneClass {
+        static get properties() {return {
+            open1: Boolean,
+            };
+        }
+
+      constructor() {
+        super();
+        this.open1 = false;
+      }
+
+    _render() {return html`
+        <span>Open modal 1</span>
+        <input type="checkbox" checked=${this.open1} on-change=${(e) => {
+            this.open1 = e.target.checked;
+            if(this.open1) this.id('myModal').show();
+            else this.id('myModal').hide();        
+        }} value="on">
+        <one-modal id="myModal" noBackdrop visible=${this.open1} on-visible-changed=${(e) => {
+            this.open1 = e.detail.value;     
+        }}>
+            <div slot="header">The header</div>
+            <div>Some content</div>
+            <div slot="footer"><button>Do something</button></div>
+        </one-modal> 
+        
+        `;
+      } 
+    }
+    customElements.define('my-test', MyTest);
+</script>
+
+</head>
+<body>
+    <my-test></my-test>
+</body>
+</html>
+
+
+
+
