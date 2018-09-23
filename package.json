@@ -1,0 +1,24 @@
+{
+  "name": "one-todo-list",
+  "version": "3.0.1",
+  "description": "",
+  "main": "one-todo-list.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexmtur/one-todo-list.git"
+  },
+  "author": "Alex <alexmartinturrillas@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alexmtur/one-todo-list/issues"
+  },
+  "homepage": "https://github.com/alexmtur/one-todo-list#readme",
+  "dependencies": {
+    "@alexmtur/one-class": "^3.2.5",
+    "@alexmtur/one-icon": "^3.1.0",
+    "@alexmtur/one-style": "^3.0.2"
+  }
+}

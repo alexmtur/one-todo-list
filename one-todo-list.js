@@ -1,44 +1,32 @@
 import {OneClass, html} from '@alexmtur/one-class'
+import {OneIcon} from '@alexmtur/one-icon'
+import {oneStyle} from '@alexmtur/one-style'
 
 export class OneTodoList extends OneClass {
     static get properties() {return {
-        list: Array,
+        list: {type: Array, public: true},
         newItem: String,
-        suggestions: Array,
-        color: String,
-        color2: String,
-        direction: Number,
+        //suggestions: Array,
     }}
     constructor() {
         super();  
         this.list = [];
         this.newItem = '';
-        this.suggestions = [];
-        this.color = '#00e3c3';
-        this.direction = 0;
+        //this.suggestions = [];
     }
     addItem () {
+        if(!this.newItem) return;
         let item = {'value': this.newItem, 'done': false};
-        this.push('list', item);
+        this.list.push(item);
         this.newItem = '';
-    },
-    toggleSelected (e) {
-        let index = e.model.index;
-        this.set('list.' + index + '.done', !e.model.item.done);
-        //console.log(this.list)
-    },
-    ready () {
-        if(this.color2) {
-            this.customStyle['--one-color'] = 'linear-gradient(' +
-                    this.direction + 'deg,' + this.color + ',' + this.color2 + ')';
-
-        }
-        else {
-            this.customStyle['--one-color'] = this.color;
-        }
+    }
+    toggleSelected (index) {
+        this.list[index].done = !this.list[index].done;
+        this.list = this.list.slice(); //to request render, optimize this!
     }
      _render() {
         return html`
+        ${oneStyle}
         <style>
             /* local DOM styles go here */
             :host {
@@ -49,6 +37,8 @@ export class OneTodoList extends OneClass {
             .add-icon {
                 font-size: 30px;
                 margin-left: 10px;
+                background: var(--one-color, #333);
+                fill: white;
             }
             .task-row {
                 margin-top: 10px;
@@ -59,7 +49,8 @@ export class OneTodoList extends OneClass {
                 color: #333333;
                 transition: all .5s;
             }
-            .task[selected] {
+            
+            .task[selected=true] {
                 color: #aaaaaa;
                 text-decoration: line-through;
             }
@@ -67,18 +58,18 @@ export class OneTodoList extends OneClass {
                 height: 20px;
                 width: 20px;
                 border: solid 1px;
-                border-color: var(--one-color);
+                border-color: var(--one-color, #333);
                 border-radius: 20px;
                 background: transparent;
                 transition: all .5s;
                 margin-right: 10px;
             }
-            .checkbox[selected] {
-                background: var(--one-color);
+            .checkbox[selected=true] {
+                background: var(--one-color, #333);
             }
             input {
-                background: var(--one-color) !important;
-                border: solid 0px transparent !important;
+                background: grey !important;
+                border: solid 1px var(--one-color, #333) !important;
                 color: white;
                 font-family: 'Open Sans';
                 font-size: 16px;
@@ -100,20 +91,27 @@ export class OneTodoList extends OneClass {
 
         <one-block align="center-left" width="100%">
             <one-block weight="5">
-                <input type="text" value="{{newItem::input}}">
-            </one-block>
-            <one-block weight="1" class="add-icon">
-                <one-icon icon="fa fa-plus-circle" on-tap="addItem" color="{{color}}" color2="{{color2}}" direction="{{direction}}"></one-icon>
+                <input type="text" on-change=${(e)=>{this.newItem = e.target.value;}} value=${this.newItem}>
+                <one-icon icon="add" class="add-icon" on-click="${(e) => this.addItem()}"></one-icon> 
             </one-block>
         </one-block>
-
-        <template is="dom-repeat" items="{{list}}">
-            <one-block align="center-left" width="100%" class="task-row" on-tap="toggleSelected">
-                <div class="checkbox" selected$="{{item.done}}"></div>
+        ${this.list.map((item, index) => html`
+            <one-block align="center-left" width="100%" class="task-row" on-click=${(e)=>{this.toggleSelected(index);}}>
+                <div class="checkbox" selected$=${item.done}></div>
                 <one-block weight="1">
-                    <div class="task" selected$="{{item.done}}">{{item.value}}</div>
+                    <div class="task" selected$=${item.done}>${item.value} and ${item.done}</div>
                 </one-block>
-            </one-block>
-        </template>`;}
+            </one-block>`)}
+        `;}
 }
 customElements.define('one-todo-list', OneTodoList);
+export class OneBlock extends OneClass {
+    static get properties() {return {
+        visible: {type: Boolean, public: true},    
+    }}
+    constructor() {
+        super();  
+    }
+     _render() {return html`<style>:host(){}</style><slot></slot>`;}
+}
+customElements.define('one-block', OneBlock);
